@@ -2,44 +2,44 @@
 
 A modern, serverless job application tracker with AI-powered features built on AWS. Track applications, get intelligent priority recommendations, auto-fill job details from URLs, and prepare for interviews with AI assistance.
 
-## 🚀 Features
+## Features
 
 ### Current (Phase 1)
-- ✅ **Full CRUD Operations**: Add, edit, delete, and view job applications
-- ✅ **Real-time Status Tracking**: Visual status indicators (Applied, Interview, Offer, Rejected)
-- ✅ **Interview Round Tracking**: Track multiple interview rounds (x1-x10)
-- ✅ **Analytics Dashboard**: View application statistics and trends
-- ✅ **Secure Authentication**: Cognito-based user management
-- ✅ **Responsive UI**: Clean, enterprise-grade table interface
+- **Full CRUD Operations**: Add, edit, delete, and view job applications
+- **Real-time Status Tracking**: Visual status indicators (Applied, Interview, Offer, Rejected)
+- **Interview Round Tracking**: Track multiple interview rounds (x1-x10)
+- **Analytics Dashboard**: View application statistics and trends
+- **Secure Authentication**: Cognito-based user management
+- **Responsive UI**: Clean, enterprise-grade table interface
 
-### Coming Soon (Phase 2-6)
-- 🔜 **AI Job Scraping**: Paste job URL → auto-fill all details
-- 🔜 **Smart Priority Engine**: AI analyzes which applications need attention
-- 🔜 **Job Recommendations**: AI monitors job boards and suggests matches
-- 🔜 **Interview Simulator**: Real-time AI mock interviews with voice
-- 🔜 **Resume Optimizer**: AI-tailored resumes per application
-- 🔜 **Cover Letter Generator**: Personalized cover letters
+### Roadmap (Phase 2-6)
+- **AI Job Scraping**: Paste job URL and auto-fill all details
+- **Smart Priority Engine**: AI analyzes which applications need attention
+- **Job Recommendations**: AI monitors job boards and suggests matches
+- **Interview Simulator**: Real-time AI mock interviews with voice
+- **Resume Optimizer**: AI-tailored resumes per application
+- **Cover Letter Generator**: Personalized cover letters
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-**Backend**
+### Backend
 - AWS Lambda (Node.js 18)
 - DynamoDB (NoSQL database)
 - API Gateway (REST API)
 - Cognito (Authentication)
 - Bedrock (AI - Claude 3)
 
-**Frontend**
+### Frontend
 - React 18
 - AWS Amplify
 - S3 (Static hosting)
 - CloudFront (CDN)
 
-**Infrastructure**
+### Infrastructure
 - Terraform (IaC)
 - Bash scripts (Deployment automation)
 
-## 🚀 Quick Start
+## Getting Started
 
 ### Prerequisites
 ```bash
@@ -50,26 +50,28 @@ A modern, serverless job application tracker with AI-powered features built on A
 - Git Bash (Windows) or Bash (Linux/Mac)
 ```
 
-### 1. Clone Repository
+### Installation
+
+1. **Clone Repository**
 ```bash
-git clone <your-repo>
+git clone https://github.com/AbigailAsibreAmoah/Job-Tracker.git
 cd TRACKER
 ```
 
-### 2. Deploy Infrastructure
+2. **Deploy Infrastructure**
 ```bash
 ./scripts/deploy.sh
 ```
 
-### 3. Deploy Frontend
+3. **Deploy Frontend**
 ```bash
 ./scripts/frontend.sh
 ```
 
-### 4. Access Application
+4. **Access Application**
 Visit the CloudFront URL from terraform output.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 TRACKER/
@@ -100,7 +102,7 @@ TRACKER/
 └── README.md
 ```
 
-## 🔧 Available Scripts
+## Available Scripts
 
 ### Deploy Infrastructure
 ```bash
@@ -126,7 +128,7 @@ Tests API endpoints and authentication.
 ```
 Removes all AWS resources.
 
-## 💰 Cost Estimate
+## Cost Estimate
 
 | Service | Monthly Cost (100 applications) |
 |---------|--------------------------------|
@@ -137,7 +139,7 @@ Removes all AWS resources.
 | Cognito | Free tier |
 | **Total** | **$11-23/month** |
 
-## 🔐 Security Features
+## Security Features
 
 - **Cognito Authentication**: Secure user management with email verification
 - **IAM Roles**: Least privilege access for all resources
@@ -145,9 +147,9 @@ Removes all AWS resources.
 - **CORS**: Properly configured for frontend-backend communication
 - **API Authorization**: Cognito-based API Gateway authorization
 
-## 🎯 Roadmap
+## Development Roadmap
 
-### Phase 2: AI Job Scraping (Next)
+### Phase 2: AI Job Scraping
 - URL parser Lambda with Bedrock
 - Auto-fill job details from URLs
 - Support for LinkedIn, Indeed, Glassdoor
@@ -172,7 +174,7 @@ Removes all AWS resources.
 - Cover letter generator
 - Email draft generator
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### CORS Errors
 Ensure CloudFront domain is in API Gateway CORS configuration.
@@ -189,10 +191,14 @@ terraform destroy -auto-approve
 ./scripts/deploy.sh
 ```
 
-## 📝 License
+## License
 
 MIT License - feel free to use for personal or commercial projects.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome! Please open an issue or PR.
+
+## Contact
+
+For questions or support, please open an issue on GitHub.
