@@ -292,9 +292,11 @@ resource "aws_api_gateway_deployment" "job_tracker_deployment" {
     aws_api_gateway_integration.applications_put_lambda,
     aws_api_gateway_integration.applications_delete_lambda,
     aws_api_gateway_integration.analytics_lambda,
+    aws_api_gateway_integration.chat_lambda,
     aws_api_gateway_integration_response.applications_options_200,
     aws_api_gateway_integration_response.application_id_options_200,
     aws_api_gateway_integration_response.analytics_options_200,
+    aws_api_gateway_integration_response.chat_options_200,
   ]
 
   rest_api_id = aws_api_gateway_rest_api.job_tracker_api.id
@@ -306,7 +308,8 @@ resource "aws_api_gateway_deployment" "job_tracker_deployment" {
       aws_api_gateway_method.applications_post.id,
       aws_api_gateway_method.applications_put.id,
       aws_api_gateway_method.applications_delete.id,
-      aws_api_gateway_method.analytics_get.id
+      aws_api_gateway_method.analytics_get.id,
+      aws_api_gateway_method.chat_post.id
     ]))
   }
 
@@ -320,4 +323,112 @@ resource "aws_api_gateway_stage" "job_tracker_stage" {
   rest_api_id   = aws_api_gateway_rest_api.job_tracker_api.id
   deployment_id = aws_api_gateway_deployment.job_tracker_deployment.id
   stage_name    = var.environment
+}
+
+# Parse URL Resource
+resource "aws_api_gateway_resource" "parse_url" {
+  rest_api_id = aws_api_gateway_rest_api.job_tracker_api.id
+  parent_id   = aws_api_gateway_rest_api.job_tracker_api.root_resource_id
+  path_part   = "parse-url"
+}
+
+resource "aws_api_gateway_method" "parse_url_post" {
+  rest_api_id   = aws_api_gateway_rest_api.job_tracker_api.id
+  resource_id   = aws_api_gateway_resource.parse_url.id
+  http_method   = "POST"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
+}
+
+resource "aws_api_gateway_integration" "parse_url_lambda" {
+  rest_api_id             = aws_api_gateway_rest_api.job_tracker_api.id
+  resource_id             = aws_api_gateway_resource.parse_url.id
+  http_method             = aws_api_gateway_method.parse_url_post.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.url_parser.invoke_arn
+}
+
+resource "aws_lambda_permission" "api_gateway_parse_url" {
+  statement_id  = "AllowExecutionFromAPIGatewayParseURL"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.url_parser.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.job_tracker_api.execution_arn}/${aws_api_gateway_stage.job_tracker_stage.stage_name}/*/*"
+}
+
+# Chat Resource
+resource "aws_api_gateway_resource" "chat" {
+  rest_api_id = aws_api_gateway_rest_api.job_tracker_api.id
+  parent_id   = aws_api_gateway_rest_api.job_tracker_api.root_resource_id
+  path_part   = "chat"
+}
+
+resource "aws_api_gateway_method" "chat_options" {
+  rest_api_id   = aws_api_gateway_rest_api.job_tracker_api.id
+  resource_id   = aws_api_gateway_resource.chat.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method_response" "chat_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.job_tracker_api.id
+  resource_id = aws_api_gateway_resource.chat.id
+  http_method = aws_api_gateway_method.chat_options.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration" "chat_options" {
+  rest_api_id = aws_api_gateway_rest_api.job_tracker_api.id
+  resource_id = aws_api_gateway_resource.chat.id
+  http_method = aws_api_gateway_method.chat_options.http_method
+  type        = "MOCK"
+
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_integration_response" "chat_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.job_tracker_api.id
+  resource_id = aws_api_gateway_resource.chat.id
+  http_method = aws_api_gateway_method.chat_options.http_method
+  status_code = aws_api_gateway_method_response.chat_options_200.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'https://d23i7v2l7vxa2o.cloudfront.net'"
+  }
+}
+
+resource "aws_api_gateway_method" "chat_post" {
+  rest_api_id   = aws_api_gateway_rest_api.job_tracker_api.id
+  resource_id   = aws_api_gateway_resource.chat.id
+  http_method   = "POST"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
+}
+
+resource "aws_api_gateway_integration" "chat_lambda" {
+  rest_api_id             = aws_api_gateway_rest_api.job_tracker_api.id
+  resource_id             = aws_api_gateway_resource.chat.id
+  http_method             = aws_api_gateway_method.chat_post.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.isla_chat.invoke_arn
+}
+
+resource "aws_lambda_permission" "api_gateway_chat" {
+  statement_id  = "AllowExecutionFromAPIGatewayChat"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.isla_chat.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.job_tracker_api.execution_arn}/${aws_api_gateway_stage.job_tracker_stage.stage_name}/*/*"
 }

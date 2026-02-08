@@ -3,6 +3,7 @@
 *.tfstate
 *.tfstate.*
 *.tfvars
+!terraform.tfvars.example
 .terraform.lock.hcl
 crash.log
 override.tf
@@ -41,3 +42,6 @@ frontend/react-app/.env.production.local
 # Logs
 *.log
 logs/
+
+# Test outputs
+response.json

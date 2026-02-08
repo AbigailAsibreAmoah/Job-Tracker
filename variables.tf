@@ -15,3 +15,10 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+variable "tavily_api_key" {
+  description = "Tavily API key for web search"
+  type        = string
+  default     = ""
+  sensitive   = true
+}

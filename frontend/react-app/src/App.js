@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Amplify, Auth, API } from 'aws-amplify'; // 
+import { Amplify, Auth, API } from 'aws-amplify';
 import AuthForm from './components/AuthForm';
 import JobList from './components/JobList';
 import JobForm from './components/JobForm';
 import Analytics from './components/Analytics';
+import DeleteModal from './components/DeleteModal';
+import IslaChat from './components/IslaChat';
 import './App.css';
 
 // Configure Amplify
@@ -32,6 +34,7 @@ function App() {
   const [editingJob, setEditingJob] = useState(null);
   const [activeTab, setActiveTab] = useState('jobs');
   const [loading, setLoading] = useState(true);
+  const [deleteJobId, setDeleteJobId] = useState(null);
 
   const fetchJobs = useCallback(async () => {
     try {
@@ -88,12 +91,25 @@ function App() {
   };
 
   const handleDeleteJob = async (jobId) => {
+    const dontAskAgain = localStorage.getItem('dontAskDeleteConfirm') === 'true';
+    
+    if (!dontAskAgain) {
+      setDeleteJobId(jobId);
+      return;
+    }
+
+    await confirmDelete(jobId);
+  };
+
+  const confirmDelete = async (jobId) => {
     try {
       const headers = await getAuthHeaders();
       await API.del('JobTrackerAPI', `/applications/${jobId}`, { headers });
       await fetchJobs();
+      setDeleteJobId(null);
     } catch (error) {
       console.error('Error deleting job:', error);
+      alert('Failed to delete application. Please try again.');
     }
   };
 
@@ -135,6 +151,11 @@ function App() {
   if (loading) return <div className="loading">Loading...</div>;
   if (!user) return <AuthForm onSignIn={setUser} />;
 
+  const getAuthToken = async () => {
+    const session = await Auth.currentSession();
+    return session.getIdToken().getJwtToken();
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -166,6 +187,9 @@ function App() {
               <button onClick={handleAddJob} className="btn-primary">Add Application</button>
             </div>
             <JobList jobs={jobs} onEdit={handleEditJob} onDelete={handleDeleteJob} onStatusChange={handleStatusChange} />
+            <footer className="app-footer">
+              <span>Powered by Isla AI</span>
+            </footer>
           </>
         )}
 
@@ -178,7 +202,20 @@ function App() {
             onCancel={() => { setShowForm(false); setEditingJob(null); }}
           />
         )}
+
+        {deleteJobId && (
+          <DeleteModal
+            onConfirm={() => confirmDelete(deleteJobId)}
+            onCancel={() => setDeleteJobId(null)}
+          />
+        )}
       </main>
+
+      <IslaChat 
+        apiUrl={process.env.REACT_APP_API_URL}
+        authToken={getAuthToken}
+        userEmail={user.attributes?.email}
+      />
     </div>
   );
 }

@@ -50,6 +50,7 @@ const JobList = ({ jobs, onEdit, onDelete, onStatusChange }) => {
             <th>Salary</th>
             <th>Applied Date</th>
             <th>Status</th>
+            <th>Priority</th>
             <th>Notes</th>
             <th>Actions</th>
           </tr>
@@ -86,6 +87,15 @@ const JobList = ({ jobs, onEdit, onDelete, onStatusChange }) => {
                     </select>
                   )}
                 </div>
+              </td>
+              <td>
+                {job.priority && (
+                  <div className="priority-cell" title={`${job.priority_reason || ''} - ${job.suggested_action || ''}`}>
+                    <span className={`priority-badge priority-${job.priority.toLowerCase()}`}>
+                      {job.priority.toUpperCase()}
+                    </span>
+                  </div>
+                )}
               </td>
               <td className="notes-cell">{job.notes || '-'}</td>
               <td>

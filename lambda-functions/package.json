@@ -4,6 +4,7 @@
   "description": "Lambda functions for job tracker",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.450.0",
-    "@aws-sdk/lib-dynamodb": "^3.450.0"
+    "@aws-sdk/lib-dynamodb": "^3.450.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.450.0"
   }
 }

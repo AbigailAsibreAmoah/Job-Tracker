@@ -1,6 +1,3 @@
-# Example terraform.tfvars file
-# Copy this to terraform.tfvars and customize as needed
-
-aws_region   = "us-east-1"
-project_name = "job-tracker"
-environment  = "dev"
+# Tavily API Key for Isla web search
+# Get your free API key at: https://tavily.com
+tavily_api_key = "YOUR_TAVILY_API_KEY_HERE"

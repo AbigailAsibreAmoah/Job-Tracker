@@ -15,9 +15,10 @@ provider "aws" {
 module "backend" {
   source = "./backend"
   
-  aws_region   = var.aws_region
-  project_name = var.project_name
-  environment  = var.environment
+  aws_region     = var.aws_region
+  project_name   = var.project_name
+  environment    = var.environment
+  tavily_api_key = var.tavily_api_key
 }
 
 # Frontend module
